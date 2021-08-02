@@ -1,13 +1,18 @@
+import { AmplifySignOut } from '@aws-amplify/ui-react';
+import Amplify from 'aws-amplify';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { awsconfig } from './aws-config';
+import Chat from './chat/Chat';
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { Chat } from './chat/Chat';
+Amplify.configure(awsconfig);
 
 ReactDOM.render(
   <React.StrictMode>
+    <AmplifySignOut />
     <Chat />
+    {/* <App /> */}
   </React.StrictMode>,
   document.getElementById('root')
 );
