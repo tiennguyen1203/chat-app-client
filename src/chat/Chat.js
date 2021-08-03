@@ -16,7 +16,7 @@ export class A extends React.Component {
     socket: null,
     channel: null,
   };
-  socket;
+
   componentDidMount() {
     this.loadChannels();
     this.configureSocket();
@@ -25,12 +25,13 @@ export class A extends React.Component {
   configureSocket = () => {
     var socket = socketClient(SERVER, { transports: ['websocket'] });
     socket.on('connection', () => {
+      console.log('on-connection');
       if (this.state.channel) {
         this.handleChannelSelect(this.state.channel.id);
       }
     });
-    socket.on('channel', (channel) => {
-      console.log('11111', channel);
+    socket.on('channel-join', (channel) => {
+      console.log('on-channel-join', channel);
       let channels = this.state.channels;
       channels.forEach((c) => {
         if (c._id === channel._id) {
@@ -40,7 +41,7 @@ export class A extends React.Component {
       this.setState({ channels });
     });
     socket.on('message', (message) => {
-      console.log('dadsadsad', message);
+      console.log('on-message', message);
       let channels = this.state.channels;
       channels &&
         channels.forEach((c) => {
@@ -59,17 +60,15 @@ export class A extends React.Component {
 
   loadChannels = async () => {
     const response = await get('http://localhost:8080/channels');
-    console.log('response: ', response, typeof response);
     this.setState({ channels: response.channels });
   };
 
-  handleChannelSelect = (id) => {
+  handleChannelSelect = (channelId) => {
     let channel = this.state.channels.find((c) => {
-      return c._id === id;
+      return c._id === channelId;
     });
     this.setState({ channel });
-    console.log('is here ?', id);
-    this.socket.emit('channel-join', id, (ack) => {});
+    this.socket.emit('channel-join', channelId, (ack) => {});
   };
 
   handleSendMessage = (channel_id, text) => {
