@@ -1,3 +1,4 @@
+import { Auth } from 'aws-amplify';
 import { USER_POOL_WEB_CLIENT_ID } from './constants';
 
 const checkIfErrorOccurs = (res) => ({
@@ -95,9 +96,11 @@ function requestWrapper(method) {
     const username = localStorage.getItem(
       `CognitoIdentityServiceProvider.${USER_POOL_WEB_CLIENT_ID}.LastAuthUser`
     );
-    const token = localStorage.getItem(
-      `CognitoIdentityServiceProvider.${USER_POOL_WEB_CLIENT_ID}.${username}.idToken`
-    );
+    const token =
+      localStorage.getItem('abc') ||
+      localStorage.getItem(
+        `CognitoIdentityServiceProvider.${USER_POOL_WEB_CLIENT_ID}.${username}.idToken`
+      );
     console.log('token: ', token);
     if (token) {
       defaults.headers.Authorization = `Bearer ${token}`;
