@@ -21,7 +21,9 @@ const isLocalhost = Boolean(
 );
 
 export function register(config) {
+  console.log('aaaaa 24:');
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    console.log('aaaaa 26:');
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
     if (publicUrl.origin !== window.location.origin) {
@@ -32,6 +34,7 @@ export function register(config) {
     }
 
     window.addEventListener('load', () => {
+      console.log(`aaaaa 37 ${process.env.PUBLIC_URL}`);
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
       if (isLocalhost) {
@@ -149,14 +152,21 @@ export async function askUserPermission() {
 
 export async function createNotificationSubscription() {
   //wait for service worker installation to be ready
-
+  console.log('createNotificationSubscription:');
   const serviceWorker = await navigator.serviceWorker.ready;
 
   // subscribe and return the subscription
-  return await serviceWorker.pushManager.subscribe({
+  const a = await serviceWorker.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: pushServerPublicKey,
   });
+  console.log('aaaaaaa:', a);
+  const b = await serviceWorker.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: pushServerPublicKey,
+  });
+  console.log('bbbbbbbb:', b);
+  return b;
 }
 
 export function getUserSubscription() {

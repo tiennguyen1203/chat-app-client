@@ -22,3 +22,6 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 .env
+amplify
+src/chat
+src/common

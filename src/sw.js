@@ -1,7 +1,8 @@
 /* eslint-disable no-restricted-globals */
 function receivePushNotification(event) {
+  console.log('event:', event.data.json());
   console.log('[Service Worker] Push Received.');
-
+  // window.location.reload();
   const { image, tag, url, title, text } = event.data.json();
 
   const options = {
@@ -24,6 +25,7 @@ function receivePushNotification(event) {
 }
 
 function openPushNotification(event) {
+  console.log('event:', event);
   console.log(
     '[Service Worker] Notification click Received.',
     event.notification.data

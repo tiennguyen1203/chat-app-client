@@ -100,7 +100,7 @@ export default function usePushNotifications() {
     setLoading(true);
     setError(false);
     axios
-      .post('http://localhost:4000/subscription', { data: userSubscription })
+      .post('http://localhost:5000/subscription', { data: userSubscription })
       .then(function (response) {
         setPushServerSubscriptionId(response.data.id);
         setLoading(false);
@@ -118,7 +118,7 @@ export default function usePushNotifications() {
     setLoading(true);
     setError(false);
     axios
-      .get(`http://localhost:4000/subscription/${pushServerSubscriptionId}`)
+      .get(`http://localhost:5000/subscription/${pushServerSubscriptionId}`)
       .catch((error) => {
         setLoading(false);
         setError(error);

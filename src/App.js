@@ -1,50 +1,91 @@
-import { AmplifySignOut, withAuthenticator } from '@aws-amplify/ui-react';
 import React from 'react';
+import logo from './logo.svg';
+import usePushNotifications from './usePushnotifications';
 import './App.scss';
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-// const publicVapidKey =  '';
-
 function App() {
-  const handleClick = async () => {
-    if ('serviceWorker' in navigator) {
-      // const register = await navigator.serviceWorker.register('/sw.js');
+  const {
+    userConsent,
+    pushNotificationSupported,
+    userSubscription,
+    onClickAskUserPermission,
+    onClickSusbribeToPushNotification,
+    onClickSendSubscriptionToPushServer,
+    pushServerSubscriptionId,
+    onClickSendNotification,
+    error,
+    loading,
+  } = usePushNotifications();
 
-      // console.log('register:', register);
+  const Loading = ({ loading }) =>
+    loading ? (
+      <div className='app-loader'>Please wait, we are loading something...</div>
+    ) : null;
+  const Error = ({ error }) =>
+    error ? (
+      <section className='app-error'>
+        <h2>{error.name}</h2>
+        <p>Error message : {error.message}</p>
+        <p>Error code : {error.code}</p>
+      </section>
+    ) : null;
 
-      // const subscription = await register.pushManager.subscribe({
-      //   userVisibleOnly: true,
-      //   applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-      // });
-      // console.log('subscription from client:', subscription);
+  const isConsentGranted = userConsent === 'granted';
 
-      await fetch('http://localhost:5000/subscribe', {
-        method: 'POST',
-        body: JSON.stringify(subscription),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-    } else {
-      console.error('Service workers are not supported in this browser');
-    }
-  };
   return (
     <div className='App'>
-      My App
-      <button onClick={handleClick}> Push notification</button>
+      <header className='App-header'>
+        <img src={logo} className='App-logo' alt='logo' />
+        <Loading loading={loading} />
+
+        <p>
+          Push notification are {!pushNotificationSupported && 'NOT'} supported
+          by your device.
+        </p>
+
+        <p>
+          User consent to recevie push notificaitons is{' '}
+          <strong>{userConsent}</strong>.
+        </p>
+
+        <Error error={error} />
+
+        <button
+          disabled={!pushNotificationSupported || isConsentGranted}
+          onClick={onClickAskUserPermission}
+        >
+          {isConsentGranted ? 'Consent granted' : ' Ask user permission'}
+        </button>
+
+        <button
+          disabled={
+            !pushNotificationSupported || !isConsentGranted || userSubscription
+          }
+          onClick={onClickSusbribeToPushNotification}
+        >
+          {userSubscription
+            ? 'Push subscription created'
+            : 'Create Notification subscription'}
+        </button>
+
+        <button
+          disabled={!userSubscription || pushServerSubscriptionId}
+          onClick={onClickSendSubscriptionToPushServer}
+        >
+          {pushServerSubscriptionId
+            ? 'Subscrption sent to the server'
+            : 'Send subscription to push server'}
+        </button>
+
+        {pushServerSubscriptionId && (
+          <div>
+            <p>The server accepted the push subscrption!</p>
+            <button onClick={onClickSendNotification}>
+              Send a notification
+            </button>
+          </div>
+        )}
+      </header>
     </div>
   );
 }
